@@ -29,6 +29,12 @@ import org.junit.runner.RunWith;
  * (2) getting test timeout (simple, will increase it, but when I first solve the problem above. And will also
  *     increase SERVER_RESPONSE_DELAY to simulate totally-concurrent requests)
  *
+ * Update: The problem isn't vertx binding to 127.0.0.1 instead of 127.x.x.x. The exception was thrown was:
+ * io.vertx.core.http.impl.HttpClientRequestImpl
+ * SEVERE: io.netty.channel.AbstractChannel$AnnotatedSocketException: Cannot assign requested address: localhost/127.0.0.1:8080
+ * By checking AnnotatedSocketException the `127.0.0.1:8080` is the server ip, as it should be. The problem is "Cannot
+ * assign requested address:localhost".
+ *
  * Credits for vertx test structure: https://github.com/vert-x3/vertx-examples/blob/master/unit-examples
  */
 @RunWith(VertxUnitRunner.class)
