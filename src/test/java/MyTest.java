@@ -35,6 +35,16 @@ import org.junit.runner.RunWith;
  * By checking AnnotatedSocketException the `127.0.0.1:8080` is the server ip, as it should be. The problem is "Cannot
  * assign requested address:localhost".
  *
+ * Also, for debugging, I suggest setting breakpoints at AbstractNioChannel:290 & AbstractNioChannel:343 (the places
+ * where annotateConnectException is used).
+ *
+ * Update: seems like the problem is at AbstractNioChannel:290:
+ * `promise.tryFailure(annotateConnectException(t, remoteAddress));`
+ * And the `t` here is indeed a `java.net.BindException` like some of the issues here:
+ * https://github.com/netty/netty/search?q=Cannot+assign+requested+address&type=Issues
+ * So, I guess it's probably out of the hands of Vert.x & Netty. Probably, next TODO is to dive into these issues or
+ * OS TCP defaults to know why this problem happens.
+ *
  * Credits for vertx test structure: https://github.com/vert-x3/vertx-examples/blob/master/unit-examples
  */
 @RunWith(VertxUnitRunner.class)
@@ -65,7 +75,7 @@ public class MyTest {
           .setDefaultPort(8080)
           .setIdleTimeout(0)
           .setMaxPoolSize(REQUESTS_PER_SOURCE_IP)
-          .setLocalAddress("127.0.4." + requestSourceIp(i))); // change 4 to any random number [1-254] between runs
+          .setLocalAddress("127.0.7." + requestSourceIp(i))); // change 4 to any random number [1-254] between runs
   }
 
   @After
